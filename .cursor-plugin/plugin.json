@@ -1,0 +1,28 @@
+{
+	"name": "convirza",
+	"displayName": "Convirza",
+	"version": "1.0.0",
+	"description": "Call tracking, conversation analytics, phone number provisioning, SMS outreach and AI voice agents on the Convirza platform.",
+	"author": {
+		"name": "Convirza",
+		"url": "https://www.convirza.com"
+	},
+	"license": "MIT",
+	"homepage": "https://www.convirza.com",
+	"repository": "https://github.com/ContactPoint/cursor-plugin",
+	"keywords": [
+		"convirza",
+		"mcp",
+		"call-tracking",
+		"conversation-analytics",
+		"sms",
+		"ai-voice-agents"
+	],
+	"logo": "logo.png",
+	"primaryColor": "#FF6500",
+	"mcpServers": {
+		"convirza": {
+			"url": "https://connect.convirza.com/mcp"
+		}
+	}
+}
