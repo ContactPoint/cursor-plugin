@@ -16,7 +16,7 @@ Every resource in Convirza belongs to one organization unit (`org_unit_id`). Bef
 1. `search` on the name and the email address. If they already exist, stop and show the existing record — duplicate users are worse than no user.
 2. `get_group_tree` for the target `org_unit_id`; `list_users` to see how comparable colleagues are configured, so the role you propose matches the account's conventions.
 3. Show the exact record — name, email, role, group — and wait for approval.
-4. `create_user` once with `first_name`, `last_name`, `username` (the email address), `role` (`Admin`, `Standard`, `Read-Only` or `Identified-only`) and `ct_user_org_unit_id` (**Admin role required**; a default password is set automatically). Confirm with `get_user` and a summary table. Tell the user how the person receives their credentials; never invent a password or transmit one in chat.
+4. `create_user` once with `first_name`, `last_name`, `username` (the email address), `role` (`Admin`, `Standard`, `Read-Only` or `Identified-only`) and `ct_user_org_unit_id` (**Admin role required**). The user can see that group and every group under it; to limit them to some sub-groups only (e.g. two locations), add `group_access_ids` with those group IDs from `get_group_tree` — they must sit under `ct_user_org_unit_id`. The new user is emailed a welcome link to set their own password (valid 72 hours). Confirm with `get_user` and a summary table, and tell the user the invite email is on its way; never invent a password or transmit one in chat. If the person did not get the email, the link expired or they forgot their password, call `send_password_reset_email` with their user ID.
 
 ## Workflow — offboarding a user
 
@@ -27,7 +27,7 @@ Every resource in Convirza belongs to one organization unit (`org_unit_id`). Bef
 
 ## Workflow — groups
 
-`create_group` and `replace_group` / `update_group` require **Admin**. `delete_group` is a soft delete and **fails on groups with active children or assigned users** — check with `get_group_org_list` and `list_users` first and tell the user what has to move before the delete can succeed. `update_group` patches; `replace_group` replaces everything.
+`create_group` and `replace_group` / `update_group` require **Admin**. `delete_group` is a soft delete and is **not guarded**: the API deletes the group even when it still has child groups, users or tracking numbers. Before asking for approval, check `list_groups` and `list_users` with that `org_unit_id`, and tell the user exactly what is still inside. `update_group` patches; `replace_group` replaces everything.
 
 ## Workflow — blacklist
 
@@ -47,7 +47,7 @@ Every resource in Convirza belongs to one organization unit (`org_unit_id`). Bef
 
 | Area                | Read                                                               | Write                                                                                          |
 | ------------------- | ------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------- |
-| Users               | `get_my_profile`, `list_users`, `get_user`                         | `create_user`, `update_user` (PATCH), `replace_user` (PUT), `delete_user` (soft) — Admin       |
+| Users               | `get_my_profile`, `list_users`, `get_user`                         | `create_user`, `update_user` (PATCH), `replace_user` (PUT), `delete_user` (soft), `send_password_reset_email` — Admin |
 | Groups              | `get_group_tree`, `list_groups`, `get_group_org_list`, `get_group` | `create_group`, `update_group` (PATCH), `replace_group` (PUT), `delete_group` (soft) — Admin   |
 | Tags                | `list_tags`                                                        | `create_tag` (accepts several; reports duplicates), `update_tag` (rename), `delete_tag` (soft) |
 | Blacklist           | `list_blacklist`                                                   | `add_to_blacklist`, `delete_from_blacklist`, `bulk_delete_blacklist`                           |
@@ -62,7 +62,7 @@ Every resource in Convirza belongs to one organization unit (`org_unit_id`). Bef
 | 401 Unauthorized | The session expired. Ask the user to reconnect the Convirza connector, then retry once |
 | A known user is missing from `list_users` | It returns active users only by default. Pass `user_status` "inactive" or "deleted" for offboarded people |
 | A full name matches nothing | `name` matches first OR last name on its own — search "John", not "John Smith", or use `email` or `search` |
-| `delete_group` fails | The group still has child groups or assigned users. Move them first (see the groups workflow) |
+| A user never got the welcome email | Call `send_password_reset_email` with their user ID; the link is valid 72 hours |
 
 ## When to decline or ask first
 

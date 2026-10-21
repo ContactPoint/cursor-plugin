@@ -1,9 +1,9 @@
 {
 	"$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
 	"name": "convirza",
-	"version": "1.0.0",
+	"version": "1.0.1",
 	"license": "MIT",
-	"description": "Call tracking, conversation analytics, phone number provisioning, SMS outreach and AI voice agents on the Convirza platform.",
+	"description": "Call tracking, conversation analytics, phone number provisioning, SMS outreach and review of AI voice agents on the Convirza platform.",
 	"author": {
 		"name": "Convirza"
 	}

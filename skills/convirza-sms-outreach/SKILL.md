@@ -38,7 +38,7 @@ Quote the relevant one when explaining a rejection, rather than retrying with di
 ## Before any send
 
 1. **Audience comes from the account's contact lists.** Ask the user which list, and pass `contact_list_ids` (or `contact_ids` for named individuals) — one or the other, never both. If the user describes an audience that is not a list, ask which list to use: a contact list carries the opt-in, call activity does not.
-2. **One registered sending number per broadcast.** Take it from `get_provisioned_numbers`; `phone_number` is exactly 10 digits. Use the same number for the whole broadcast.
+2. **One registered sending number per broadcast.** It must be an SMS-enabled tracking number owned by the account — take it from `list_provisioned_routes` or `get_assigned_numbers`; `phone_number` is 10 digits. Use the same number for the whole broadcast.
 3. **Check the suppression list.** `list_blacklist` before sending, and report any recipients that match so the user can remove them.
 4. **Confirm opt-out text is configured.** The account's SMS settings hold its opt-in and opt-out message text. If the user has not set them up, say so and point them at the Convirza app before the first send.
 5. **One message text for every recipient.** The message must identify the sending business and must not imitate another organisation.
@@ -46,7 +46,7 @@ Quote the relevant one when explaining a rejection, rather than retrying with di
 ## Workflow — creating a broadcast
 
 1. **Assemble the required fields before proposing anything.** `create_broadcast` needs all of: `broadcast_name`, `message`, `org_unit_id`, `phone_number` (the sending tracking number, exactly 10 digits), `agent_ring_to` (exactly 10 digits), and the audience from step 1 above.
-2. **Resolve, never guess.** `get_group_tree` for `org_unit_id`; `get_provisioned_numbers` for a valid sending number. Ask the user for the audience IDs.
+2. **Resolve, never guess.** `get_group_tree` for `org_unit_id`; `list_provisioned_routes` or `get_assigned_numbers` for a valid sending number. Ask the user for the audience IDs: no tool lists contacts or contact lists, so the user reads them from the Convirza app (Contacts).
 3. **Show the full preview and stop.** Recipient count, sending number, exact message text, and send time. Wait for an explicit yes. Nothing about a message being "just a draft" survives a `create_broadcast` call.
 4. **Send or schedule.** `is_scheduled` is required. Immediate send: `is_scheduled=false`. Scheduled: `is_scheduled=true` with `schedule_datetime` (ISO 8601). Call the tool **exactly once** — a success response means the broadcast exists; verify with `get_broadcast` rather than retrying.
 5. **Tell the user what can still be changed.** Before it runs, a scheduled broadcast can be edited with `update_broadcast` (partial) or `replace_broadcast` (full replace, and only for broadcasts with an existing schedule that is not within 15 minutes), or stopped with `cancel_broadcast_schedule`. After it sends, nothing can be undone.
@@ -67,7 +67,7 @@ Quote the relevant one when explaining a rejection, rather than retrying with di
 | Create or schedule a broadcast | `create_broadcast`                                               | **write — delivery is final**                  |
 | Edit a scheduled broadcast     | `update_broadcast` (partial), `replace_broadcast` (full replace) | write                                          |
 | Stop a scheduled broadcast     | `cancel_broadcast_schedule`                                      | write — removes the schedule, keeps the record |
-| Sending numbers                | `get_provisioned_numbers`                                        | read                                           |
+| Sending numbers                | `list_provisioned_routes`, `get_assigned_numbers`                | read                                           |
 | Groups                         | `get_group_tree`                                                 | read                                           |
 | Suppression list               | `list_blacklist`                                                 | read                                           |
 

@@ -13,11 +13,13 @@ Turn raw Convirza call records into a report someone can act on. Every number in
 2. **Pick the right entry tool** for the question:
     - call volume, outcomes, a call log → `get_calls`
     - one specific call → `get_call`
-    - missed, hung-up or unconverted calls → `get_opportunity_recovery`
-    - which source or campaign drove calls → `get_attribution_engine`
+    - missed or unanswered calls in a date range → `get_calls` with `disposition` = "NO ANSWER" (add BUSY,FAILED to widen)
+    - calls the AI flagged as lost opportunities (no date filter) → `get_opportunity_recovery`
+    - which campaign drove calls → `get_calls` (each row carries `campaign_name`; filter with `campaign_id`)
+    - which web visit, UTM source or gclid drove a call → `get_attribution_engine` (website DNI calls only, no date filter)
     - text conversations rather than voice → `get_sms_conversations`
 3. **Mind the range.** `get_calls` has no maximum range; a long range just means more pages, so use `total` for counts rather than paging through everything. Both date params default to the last 7 days when omitted.
-4. **Pull detail only where it earns its place.** Add `include=recordings,transcription,tags` on `get_call` when the user asks what was said or wants to listen. Recording URLs expire after 7 days — say so when you hand one over.
+4. **Pull detail only where it earns its place.** Add `include=summary,transcription,tags` on `get_call` when the user asks what was said. Recording URLs are always returned (no `include` needed) and expire after 7 days — say so when you hand one over.
 5. **Report, don't dump.** Lead with a one-line headline (totals and the answered rate), reproduce the tool's markdown table in full, then add the breakdown that answers the actual question — by disposition, by campaign, or by repeat caller.
 6. **Close with the next step.** Name the one or two follow-ups that matter, e.g. drilling into a specific call, or blocking a repeat nuisance caller.
 
@@ -26,12 +28,12 @@ Turn raw Convirza call records into a report someone can act on. Every number in
 | Goal | Tool | Notes |
 | --- | --- | --- |
 | Call list / volume | `get_calls` | No max range; filter by `org_unit_id`, `campaign_id`, `provisioned_route_id`, `caller_id`, `phone_number`, `ring_to`, `disposition`, `external_id` |
-| One call in full | `get_call` | `include` = tags, comments, custom_sources, call_flow, recordings, transcription |
-| Missed opportunities | `get_opportunity_recovery` | Filter with `insight_ids`, `org_unit_id`; no date filter |
-| Source / campaign performance | `get_attribution_engine` | Filter with `org_unit_id`, sort with `sort_by`; no date filter |
+| One call in full | `get_call` | `include` = custom_sources, tags, comments, indicators, summary, transcription, transcription_details, extended_caller, dni_data, scorecard; recordings always included |
+| AI-flagged lost opportunities | `get_opportunity_recovery` | Filter with `insight_ids`, `org_unit_id`; no date filter |
+| Website (DNI) attribution | `get_attribution_engine` | DNI-tracked calls only; UTM, gclid, referrer per call; filter with `org_unit_id`, sort with `sort_by`; no date filter |
 | SMS threads | `get_sms_conversations` | `type` = allOpen, assignedToYou, unassigned, close |
 | Resolve names to IDs | `search`, `list_campaigns`, `get_group_tree`, `list_ad_sources` | Always before filtering |
-| Score a recording | `upload_call` | mp3 or wav via `recording_url` or an attached `recording_file`; needs `call_date`, `org_unit_id`, `caller_id`, `ring_to`. No `call_id` comes back — poll `get_calls` with the returned `external_id`, then `get_call` with `include` = "scorecard,indicators,transcription". For a local file the tool cannot receive, omit both: the user uploads it through the returned "upload_url" (or the upload box, where the host shows one) and sees the score there. When call details are known but no URL or file was given, first ask the user: paste a recording URL, or upload the file through the upload link? |
+| Score a recording | `upload_call` | mp3 or wav via `recording_url`; needs `call_date`, `org_unit_id`, `caller_id`, `ring_to`. No `call_id` comes back — poll `get_calls` with the returned `external_id`, then `get_call` with `include` = "scorecard,indicators,transcription". For a local file, omit `recording_url`: give the user the returned "upload_url" to open in their browser, where they upload the file and see the score. When call details are known but no URL or file was given, first ask the user: paste a recording URL, or upload the file through the upload link? |
 
 Everything except `upload_call` is read-only. `upload_call` adds a call — confirm the group and phone numbers with the user first. When it returns `conversation_analytics_enabled: false`, tell the user the call will not be transcribed or scored; do not promise a score.
 
@@ -58,6 +60,6 @@ Everything except `upload_call` is read-only. `upload_call` adds a call — conf
 - **Ask** which group or campaign when the account has several and the request is ambiguous — a wrong `org_unit_id` produces a confidently wrong report.
 - **Decline** to guess a caller's identity, intent or creditworthiness from call metadata.
 - **Decline** to produce a per-person productivity ranking from raw call counts; point at the `convirza-agent-quality` skill, which uses the scored data built for that purpose.
-- **Stop and report** a 401 (session expired — the user must reconnect) or a 403 (the account lacks the required role; `get_agent_performance` needs Admin).
+- **Stop and report** a 401 (session expired — the user must reconnect) or a 403 (the account lacks the required role; `get_agent_performance` needs Admin, Standard or Read Only).
 
 See `references/call-fields.md` for disposition values, `include` datasets and date rules.

@@ -44,4 +44,4 @@ The last two rows are the trap: their names say update and their behaviour is re
 
 ## Search constraints
 
-`search_phone_numbers` accepts `match` (a digit pattern; `*` or `%` is a wildcard, so `801*` means area code 801 — a bare `801` matches those digits anywhere in the number) **or** the `state` + `rc` pair, never both. `state` and `rc` must be supplied together.
+`search_phone_numbers` takes `npa` (area code, exactly 3 digits — use it for area codes and toll-free prefixes), `nxx`, `ocn`, or the `state` + `rc` pair, which must be supplied together. `match` is a digit pattern (`*` or `%` is a wildcard) for finding a specific sequence; it cannot be combined with any other filter, and carrier results can match its digits anywhere in the number, so do not use it for an area code.
