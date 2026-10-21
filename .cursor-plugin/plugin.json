@@ -1,8 +1,8 @@
 {
 	"name": "convirza",
 	"displayName": "Convirza",
-	"version": "1.0.0",
-	"description": "Call tracking, conversation analytics, phone number provisioning, SMS outreach and AI voice agents on the Convirza platform.",
+	"version": "1.0.1",
+	"description": "Call tracking, conversation analytics, phone number provisioning, SMS outreach and review of AI voice agents on the Convirza platform.",
 	"author": {
 		"name": "Convirza",
 		"url": "https://www.convirza.com"

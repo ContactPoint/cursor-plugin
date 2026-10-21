@@ -41,13 +41,13 @@ Only users with the **Admin**, **Standard** or **Read Only** role can connect. R
 **Calls and attribution**
 
 - "How many calls did we get last week, and how many were missed?"
-- "Which ad source drove the most calls this month?"
+- "Which campaigns brought in the most calls from our website?"
 - "Show me the transcript of the last call from 801-555-0142"
 
 **Agent quality**
 
 - "Rank my agents by average quality score for September"
-- "Which calls pulled down Dana's scorecard results?"
+- "Show the scorecard summary by agent for September"
 
 **Numbers and routing**
 
@@ -58,7 +58,7 @@ Only users with the **Admin**, **Standard** or **Read Only** role can connect. R
 **SMS**
 
 - "Show unassigned SMS threads from the last 3 days"
-- "Schedule a broadcast to the Spring Promo contact list for Friday at 10 AM"
+- "Schedule a broadcast to contact list 4512 for Friday at 10 AM" (Admin or Standard; contact list IDs are in the Convirza app under Contacts)
 
 **Account and integrations**
 

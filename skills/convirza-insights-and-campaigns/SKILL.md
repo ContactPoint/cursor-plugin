@@ -43,7 +43,7 @@ This skill sets up the measurement, not the report. Everything created here chan
 | Tags | `list_tags` | `create_tag`, `update_tag`, `delete_tag` (soft) |
 | Reference data | `list_ad_sources`, `list_industries` | — |
 
-Writes require Admin or Standard role.
+Campaign, insight, custom insight, scorecard and call-title writes require the Admin role. Tag writes and call action templates allow Admin or Standard.
 
 ## Common issues
 
